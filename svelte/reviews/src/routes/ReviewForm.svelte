@@ -6,8 +6,11 @@
   var isLoading = true;
   var isError = false;
   var stars_count = 0;
+  var selectedStars = 0;
   const urlParams = new URLSearchParams('?' + window.location.href.split('?')[1]);
-  console.log(urlParams.get('link_id'));
+  if (urlParams.get('stars_count')) {
+    stars_count = parseInt(urlParams.get('stars_count'));
+  }
   var page = 'stars';
 
   onMount(async () => {
@@ -27,10 +30,18 @@
           logo_url: d.logo_url || '',
           redirect_url: d.redirect_url || '',
         };
-        console.log(data);
 
         window.document.title = `Review ${data.name}`;
+
+        //get radio button with same value as stars_count and check it
+
         isLoading = false;
+        //wait 10ms
+        await new Promise((r) => setTimeout(r, 10));
+        var radio = document.querySelector(`input[value="${stars_count}"]`);
+        if (radio) {
+          radio.checked = true;
+        }
       } catch (e) {
         page = 'error';
         console.error(e);
@@ -44,9 +55,8 @@
 
   async function next() {
     if (page == 'stars') {
-      const rating = document.querySelector('input[name="rating"]:checked');
-      if (rating) {
-        stars_count = parseInt(rating.value);
+      if (document.querySelector('input[name="rating"]:checked')) {
+        stars_count = parseInt(document.querySelector('input[name="rating"]:checked').value);
         isError = false;
         if (stars_count > 3) {
           page = 'to_google';
@@ -105,11 +115,9 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Success:', data);
         isLoading = false;
       })
       .catch((error) => {
-        console.error('Error:', error);
         isLoading = false;
       });
   }
