@@ -66,9 +66,6 @@
     const links = collection(window.db, 'links');
     const q = query(links, where('business_id', '==', params.id));
     const linksSnapshot = await getDocs(q);
-    linksSnapshot.docs.map((doc) => {
-      console.log(doc.data());
-    });
     links_list = linksSnapshot.docs.map((doc) => {
       return {id: doc.id, ...doc.data()};
     });

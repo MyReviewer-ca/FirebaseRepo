@@ -1,3 +1,18 @@
+# Bundles
+admin/bundle.js
+admin/bundle.css
+admin/bundle.js.map
+admin/bundle.js.LICENSE.txt
+
+reviews/bundle.js
+reviews/bundle.css
+reviews/bundle.js.map
+reviews/bundle.js.LICENSE.txt
+
+# Nodes/tests
+notes.txt
+test.csv
+
 # Logs
 logs
 *.log

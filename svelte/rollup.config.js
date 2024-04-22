@@ -1,3 +1,5 @@
+var isDev = true;
+
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
@@ -7,27 +9,40 @@ import svelte from 'rollup-plugin-svelte';
 const plugins = [json(), css({output: 'bundle.css'}), resolve({browser: true, dedupe: ['svelte']}), commonjs()];
 
 export default (args) => {
-  const isDev = args.mode === 'development';
-
   plugins.push(
     svelte({
       compilerOptions: {
-        dev: true,
+        dev: isDev,
       },
     })
   );
-  return {
-    sourcemap: true,
-    input: 'src/main.js',
-    output: {
-      sourcemap: true,
-      format: 'iife',
-      name: 'app',
-      file: '../www/bundle.js',
+
+  return [
+    {
+      input: 'admin/src/main.js',
+      output: {
+        sourcemap: isDev,
+        format: 'iife',
+        name: 'admin',
+        file: '../admin/bundle.js',
+      },
+      plugins: plugins,
+      watch: {
+        clearScreen: false,
+      },
     },
-    plugins: plugins,
-    watch: {
-      clearScreen: false,
+    {
+      input: 'reviews/src/main.js',
+      output: {
+        sourcemap: isDev,
+        format: 'iife',
+        name: 'reviews',
+        file: '../reviews/bundle.js',
+      },
+      plugins: plugins,
+      watch: {
+        clearScreen: false,
+      },
     },
-  };
+  ];
 };
