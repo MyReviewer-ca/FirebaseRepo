@@ -1,5 +1,5 @@
 <script>
-  var isDev = true;
+  var isDev = false;
   import Router, {location, pop, push, querystring, replace} from 'svelte-spa-router';
   // Import the functions you need from the SDKs you need
   import {initializeApp} from 'firebase/app';

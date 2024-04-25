@@ -13,7 +13,7 @@
   ],
   "hosting": [
     {
-      "site": "admin-portal",
+      "site": "myreviewer-admin-portal",
       "public": "admin",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
@@ -26,13 +26,17 @@
           "function": "generate_report"
         },
         {
+          "source": "/img/**",
+          "destination": "/img/**"
+        },
+        {
           "source": "**",
           "destination": "/index.html"
         }
       ]
     },
     {
-      "site": "reviews",
+      "site": "myreviewer-reviews",
       "public": "reviews",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
