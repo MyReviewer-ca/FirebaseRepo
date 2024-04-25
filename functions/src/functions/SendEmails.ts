@@ -56,6 +56,8 @@ export = onRequest(async (request: any, response: any) => {
 
   //Send the emails
   data.emails.forEach((email: any) => {
+    if (!email[0] || !email[1]) return;
+    if (!email[0].includes('@') || !email[0].includes('.')) return;
     try {
       //create a email document
       var docRef = db.collection('emails').doc();

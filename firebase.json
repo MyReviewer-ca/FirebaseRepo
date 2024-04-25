@@ -18,6 +18,14 @@
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
+          "source": "/send_emails",
+          "function": "send_emails"
+        },
+        {
+          "source": "/send_report",
+          "function": "generate_report"
+        },
+        {
           "source": "**",
           "destination": "/index.html"
         }

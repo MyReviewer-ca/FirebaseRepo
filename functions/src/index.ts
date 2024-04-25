@@ -1,5 +1,5 @@
 import * as firebase from 'firebase-admin';
-export const isDev = true;
+export const isDev = false;
 firebase.initializeApp();
 
 //API
@@ -10,3 +10,4 @@ exports.link_click = require('./functions/LinkClick');
 exports.tracking_pixel = require('./functions/TrackingPixel');
 
 exports.send_emails = require('./functions/SendEmails');
+exports.generate_report = require('./functions/GenerateReport');

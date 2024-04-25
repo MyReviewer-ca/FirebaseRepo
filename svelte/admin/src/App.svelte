@@ -1,5 +1,5 @@
 <script>
-  var isDev = true;
+  var isDev = false;
   window.isDev = isDev;
   window.copyClip = (text) => {
     //create a invis textarea

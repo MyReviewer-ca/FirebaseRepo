@@ -95,6 +95,65 @@
       return {id: doc.id, ...doc.data()};
     });
   }
+
+  function sendEmails() {
+    //ask for .csv file (create a file input)
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.csv';
+    fileInput.onchange = async () => {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const text = e.target.result;
+        const lines = text.split('\n');
+        const dataToSend = {
+          business_id: params.id,
+          emails: lines.map((line) => line.split(',')),
+        };
+
+        //send post request to /send_emails
+        const response = await fetch('/send_emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dataToSend),
+        });
+        const result = await response.json();
+        alert(result.message);
+      };
+      reader.readAsText(file);
+    };
+    fileInput.click();
+  }
+
+  var today = new Date();
+  var thirtyDaysAgo = new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  var startDate = thirtyDaysAgo.toISOString().split('T')[0];
+  var endDate = today.toISOString().split('T')[0];
+  var email = 'admin@myreviewer.ca';
+  function sendReport() {
+    //send post request to /send_report
+    var dataToSend = {
+      business_id: params.id,
+      start_date: startDate,
+      end_date: endDate,
+      send_email: email,
+    };
+    fetch('/send_report', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dataToSend),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert(data.message);
+      });
+  }
   let activeTab = 'about';
 </script>
 
@@ -116,6 +175,12 @@
     </li>
     <li class="nav-item">
       <a class="nav-link" class:active={activeTab === 'reviews'} on:click={() => (activeTab = 'reviews')}>Reviews</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" class:active={activeTab === 'report'} on:click={() => (activeTab = 'report')}>Report</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" class:active={activeTab === 'stripe'} on:click={() => (activeTab = 'stripe')}>Stripe</a>
     </li>
   </ul>
 
@@ -148,6 +213,8 @@
   {/if}
 
   {#if activeTab === 'emails'}
+    <button class="btn btn-primary" on:click={sendEmails}>Send Emails</button>
+
     <table class="table">
       <thead>
         <tr>
@@ -231,5 +298,27 @@
         {/each}
       </tbody>
     </table>
+  {/if}
+
+  {#if activeTab === 'report'}
+    <h2>Report</h2>
+    <div class="form-group">
+      <label for="start">Start Date:</label>
+      <input type="date" id="start" bind:value={startDate} class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="end">End Date:</label>
+      <input type="date" id="end" bind:value={endDate} class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" bind:value={email} class="form-control" required />
+    </div>
+    <button class="btn btn-primary" on:click={sendReport}>Send</button>
+  {/if}
+
+  {#if activeTab === 'stripe'}
+    <h2>Stripe</h2>
+    <p>Coming soon</p>
   {/if}
 </div>

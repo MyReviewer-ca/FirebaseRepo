@@ -53,7 +53,7 @@
     <p>Received from: <br /><b>{data.received_from}</b></p>
     {#if data.received_from == 'email'}
       <p>Email: <br /><b>{from.email}</b></p>
-      <p>Email Viewed At: <br /><b>{from.opened_at.toDate().toLocaleString()}</b></p>
+      {#if from.viewed}<p>Email Viewed At: <br /><b>{from.opened_at.toDate().toLocaleString()}</b></p>{/if}
       <p>Email Sent At: <br /><b>{from.sent_at.toDate().toLocaleString()}</b></p>
     {/if}
     {#if data.received_from == 'link'}
