@@ -61,8 +61,6 @@
 
 <div class="container">
   <h1>Dashboard</h1>
-  <button class="btn btn-primary" on:click={createBusiness}>Create Business</button>
-  <button class="btn btn-primary" on:click={createLink}>Create Blank Link</button>
 
   <ul class="nav nav-tabs">
     <li class="nav-item">
@@ -75,6 +73,8 @@
   </ul>
 
   {#if activeTab === 'businesses'}
+    <button class="btn btn-primary" on:click={createBusiness}>Create Business</button>
+
     <!-- About tab content -->
     <table class="table">
       <thead>
@@ -97,6 +97,8 @@
   {/if}
 
   {#if activeTab === 'links'}
+    <button class="btn btn-primary" on:click={createLink}>Create Blank Link</button>
+
     <table class="table">
       <thead>
         <tr>

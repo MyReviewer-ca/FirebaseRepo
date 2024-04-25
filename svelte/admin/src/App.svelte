@@ -1,10 +1,21 @@
 <script>
   var isDev = true;
+  window.isDev = isDev;
+  window.copyClip = (text) => {
+    //create a invis textarea
+    var textArea = document.createElement('textarea');
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('Copy');
+    textArea.remove();
+  };
   import Router, {location, pop, push, querystring, replace} from 'svelte-spa-router';
 
   import business from './routes/Business.svelte';
   import dashboard from './routes/Dashboard.svelte';
   import login from './routes/Login.svelte';
+  import review from './routes/Review.svelte';
   // Import the functions you need from the SDKs you need
   import {initializeApp} from 'firebase/app';
   import {connectAuthEmulator, getAuth} from 'firebase/auth';
@@ -53,6 +64,7 @@
     '/': login,
     '/dashboard': dashboard,
     '/b/:id': business,
+    '/b/:id/:review_id': review,
   };
 
   let currentRoute = '';

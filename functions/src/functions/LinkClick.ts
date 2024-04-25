@@ -1,10 +1,12 @@
-import * as admin from 'firebase-admin';
+import {firestore} from 'firebase-admin';
 import {onRequest} from 'firebase-functions/v2/https';
-import {Timestamp} from 'firebase/firestore';
+const {Firestore} = require('firebase-admin/firestore');
 
-const db = admin.firestore();
+const db = firestore();
 
 export = onRequest(async (request, response) => {
+  response.set('Access-Control-Allow-Origin', '*');
+
   //get path
   const path = request.path;
   const regex = /\/l\/(.*)/;
@@ -25,12 +27,11 @@ export = onRequest(async (request, response) => {
     //get data
     const data: any = linkDoc.data();
     response.redirect(`/#/r/${data.business_id}?link_id=${link_id}`);
-    const newClickCount = data.total_clicks || 0 + 1;
+    var newClickCount = data.total_clicks || 0;
+    newClickCount += 1;
     await linkDoc.ref.update({total_clicks: newClickCount});
     await db.collection('links').doc(link_id).collection('clicks').add({
-      click_date: Timestamp.now().seconds,
+      click_date: Firestore.FieldValue.serverTimestamp(),
     });
   }
-
-  response.set('Access-Control-Allow-Origin', '*');
 });

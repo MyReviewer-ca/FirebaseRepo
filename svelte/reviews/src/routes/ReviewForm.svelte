@@ -147,24 +147,24 @@
             <div class="mb-3">
               <div id="rating">
                 <div class="form-check">
-                  <input class="form-check-input {isError ? 'is-invalid' : ''}" type="radio" name="rating" id="rating1" value="1" required />
-                  <label class="form-check-label stars" for="rating1">★</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input {isError ? 'is-invalid' : ''}" type="radio" name="rating" id="rating2" value="2" required />
-                  <label class="form-check-label stars" for="rating2">★★</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input {isError ? 'is-invalid' : ''}" type="radio" name="rating" id="rating3" value="3" required />
-                  <label class="form-check-label stars" for="rating3">★★★</label>
+                  <input class="form-check-input {isError ? 'is-invalid' : ''}" type="radio" name="rating" id="rating5" value="5" required />
+                  <label class="form-check-label stars" for="rating5">★★★★★</label>
                 </div>
                 <div class="form-check">
                   <input class="form-check-input {isError ? 'is-invalid' : ''}" type="radio" name="rating" id="rating4" value="4" required />
                   <label class="form-check-label stars" for="rating4">★★★★</label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input {isError ? 'is-invalid' : ''}" type="radio" name="rating" id="rating5" value="5" required />
-                  <label class="form-check-label stars" for="rating5">★★★★★</label>
+                  <input class="form-check-input {isError ? 'is-invalid' : ''}" type="radio" name="rating" id="rating3" value="3" required />
+                  <label class="form-check-label stars" for="rating3">★★★</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input {isError ? 'is-invalid' : ''}" type="radio" name="rating" id="rating2" value="2" required />
+                  <label class="form-check-label stars" for="rating2">★★</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input {isError ? 'is-invalid' : ''}" type="radio" name="rating" id="rating1" value="1" required />
+                  <label class="form-check-label stars" for="rating1">★</label>
                 </div>
               </div>
             </div>
@@ -176,6 +176,7 @@
       {:else if page == 'review'}
         <div class="card-body">
           <h2>Review for {data.name}</h2>
+          <p>Sorry that your experience was not optimal, please tell us how we can improve.</p>
           <form>
             <p class="stars">
               {#each Array(stars_count) as _, i}

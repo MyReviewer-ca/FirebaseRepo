@@ -1,8 +1,8 @@
-import * as admin from 'firebase-admin';
+import {firestore} from 'firebase-admin';
 import {onRequest} from 'firebase-functions/v2/https';
-import {Timestamp} from 'firebase/firestore';
+const {Firestore} = require('firebase-admin/firestore');
 
-var db = admin.firestore();
+var db = firestore();
 
 export = onRequest(async (request: any, response: any) => {
   //open CORS
@@ -22,7 +22,7 @@ export = onRequest(async (request: any, response: any) => {
     review: data.review || '',
     redirected_to_google: data.redirected_to_google || false,
     received_from: data.received_from || '',
-    review_date: Timestamp.now().seconds,
+    review_date: Firestore.FieldValue.serverTimestamp(),
   };
 
   if (data.received_from == 'link') {

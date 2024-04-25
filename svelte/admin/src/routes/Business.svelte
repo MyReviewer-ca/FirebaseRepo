@@ -1,10 +1,12 @@
 <script>
   export let params = {};
-  import {addDoc, collection, doc, getDoc, getDocs, query, setDoc, where} from 'firebase/firestore';
+  import {addDoc, collection, doc, getDoc, getDocs, orderBy, query, setDoc, where} from 'firebase/firestore';
   import {onMount} from 'svelte';
 
   let data = {};
   let links_list = [];
+  let emails_list = [];
+  let reviews_list = [];
 
   onMount(async () => {
     //get the business id from the params
@@ -23,8 +25,9 @@
       logo_url: d.logo_url || '',
       redirect_url: d.redirect_url || '',
     };
-    console.log(data);
     getLinks();
+    getEmails();
+    getReviews();
   });
 
   async function handleEdit(key) {
@@ -71,14 +74,34 @@
     });
     return links_list;
   }
+
+  async function getEmails() {
+    //get docs in emails collection where business_id is params.id
+    const emails = collection(window.db, 'emails');
+    const q = query(emails, where('business_id', '==', params.id));
+    const emailsSnapshot = await getDocs(q);
+    emails_list = emailsSnapshot.docs.map((doc) => {
+      return {id: doc.id, ...doc.data()};
+    });
+    return emails_list;
+  }
+
+  async function getReviews() {
+    //business_id/reviews/review_id
+    const reviews = collection(window.db, 'businesses', params.id, 'reviews');
+    const q = query(reviews, orderBy('review_date', 'desc'));
+    const reviewsSnapshot = await getDocs(q);
+    reviews_list = reviewsSnapshot.docs.map((doc) => {
+      return {id: doc.id, ...doc.data()};
+    });
+  }
   let activeTab = 'about';
 </script>
 
 <div class="container">
   <button class="btn btn-secondary" on:click={window.spa.pop}>Back</button>
 
-  <h1>Business</h1>
-  <button class="btn btn-primary" on:click={createLink}>Create Link</button>
+  <h1>{data.name}</h1>
 
   <ul class="nav nav-tabs">
     <li class="nav-item">
@@ -103,7 +126,7 @@
         <tr>
           <th scope="col">Attribute</th>
           <th scope="col">Value</th>
-          <th scope="col">Actions</th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
@@ -125,26 +148,44 @@
   {/if}
 
   {#if activeTab === 'emails'}
-    <!-- Emails tab content -->
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Email</th>
+          <th scope="col">Viewed</th>
+          <th scope="col">Sent Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each emails_list as email (email.id)}
+          <tr>
+            <td>{email.email}</td>
+            <td>{email.viewed ? 'Yes' : 'No'}</td>
+            <td>
+              {email.sent_at.toDate().toLocaleDateString()}
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
   {/if}
 
   {#if activeTab === 'links'}
+    <button class="btn btn-primary" on:click={createLink}>Create Link</button>
     <table class="table">
       <thead>
         <tr>
           <th scope="col">Name</th>
-          <th scope="col">Type</th>
-          <th scope="col">Total Clicks</th>
-          <th scope="col">Total Collected Reviews</th>
-          <th scope="col">Total Redirected</th>
-          <th scope="col">Actions</th>
+          <th scope="col">Clicks</th>
+          <th scope="col">Collected Reviews</th>
+          <th scope="col">Redirected</th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
         {#each links_list as link (link.id)}
           <tr>
             <td>{link.name}</td>
-            <td>{link.type}</td>
             <td>{link.total_clicks || 0}</td>
             <td>{link.total_collected_reviews || 0}</td>
             <td>{link.total_redirected || 0}</td>
@@ -152,8 +193,10 @@
               <button
                 class="btn btn-primary"
                 on:click={() => {
-                  alert('coming soon');
-                }}>View</button
+                  //copy the link to the clipboard
+                  window.copyClip(`${window.isDev ? 'http://127.0.0.1:5005' : 'https://review.myreviewer.ca'}/l/${link.id}`);
+                  alert('Link copied to clipboard');
+                }}>Copy Link</button
               >
             </td>
           </tr>
@@ -163,6 +206,30 @@
   {/if}
 
   {#if activeTab === 'reviews'}
-    <!-- Emails tab content -->
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Rating</th>
+          <th scope="col">Review Date</th>
+          <th scope="col">View</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each reviews_list as review (review.id)}
+          <tr>
+            <td>{review.rating}</td>
+            <td>{review.review_date.toDate().toLocaleString()}</td>
+            <td>
+              <button
+                class="btn btn-primary"
+                on:click={() => {
+                  window.spa.push(`/b/${params.id}/${review.id}`);
+                }}>View</button
+              >
+            </td></tr
+          >
+        {/each}
+      </tbody>
+    </table>
   {/if}
 </div>
