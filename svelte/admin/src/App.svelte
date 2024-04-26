@@ -83,6 +83,15 @@
   function handleRouteChange() {
     window.scrollTo(0, 0);
   }
+
+  //if user is logged in, redirect to dashboard
+  window.auth.onAuthStateChanged((user) => {
+    if (user) {
+      window.spa.push('/dashboard');
+    } else {
+      window.spa.push('/');
+    }
+  });
 </script>
 
 <Router {routes} on:routeChanged={handleRouteChange} />

@@ -7,8 +7,10 @@
   let links_list = [];
   let emails_list = [];
   let reviews_list = [];
+  var isLoading = true;
 
-  onMount(async () => {
+  async function refresh() {
+    isLoading = true;
     //get the business id from the params
     const businessId = params.id;
     const business = await getDoc(doc(window.db, 'businesses', businessId));
@@ -25,24 +27,35 @@
       logo_url: d.logo_url || '',
       redirect_url: d.redirect_url || '',
     };
-    getLinks();
-    getEmails();
-    getReviews();
+    await getLinks();
+    await getEmails();
+    await getReviews();
+    isLoading = false;
+  }
+
+  onMount(async () => {
+    refresh();
   });
 
   async function handleEdit(key) {
-    console.log(`Editing ${key}`);
+    try {
+      console.log(`Editing ${key}`);
 
-    //use prompt to get the new value
-    const newValue = prompt(`Enter new value for ${key}`);
+      //use prompt to get the new value
+      const newValue = prompt(`Enter new value for ${key}`);
 
-    await setDoc(
-      doc(window.db, 'businesses', params.id),
-      {
-        [key]: newValue,
-      },
-      {merge: true}
-    );
+      await setDoc(
+        doc(window.db, 'businesses', params.id),
+        {
+          [key]: newValue,
+        },
+        {merge: true}
+      );
+      refresh();
+    } catch (e) {
+      console.error(e);
+      alert(e.message || 'An error occurred');
+    }
   }
 
   async function createLink() {
@@ -57,6 +70,7 @@
           created_on: new Date(),
         }).then((docRef) => {
           alert('Link created');
+          refresh();
         });
       }
     } else {
@@ -122,6 +136,7 @@
         });
         const result = await response.json();
         alert(result.message);
+        refresh();
       };
       reader.readAsText(file);
     };
@@ -158,167 +173,171 @@
 </script>
 
 <div class="container">
-  <button class="btn btn-secondary" on:click={window.spa.pop}>Back</button>
+  {#if isLoading}
+    isLoading...
+  {:else}
+    <button class="btn btn-secondary" on:click={window.spa.pop}>Back</button>
 
-  <h1>{data.name}</h1>
+    <h1>{data.name}</h1>
 
-  <ul class="nav nav-tabs">
-    <li class="nav-item">
-      <a class="nav-link" class:active={activeTab === 'about'} on:click={() => (activeTab = 'about')}>About</a>
-    </li>
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link" class:active={activeTab === 'about'} on:click={() => (activeTab = 'about')}>About</a>
+      </li>
 
-    <li class="nav-item">
-      <a class="nav-link" class:active={activeTab === 'emails'} on:click={() => (activeTab = 'emails')}>Emails</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" class:active={activeTab === 'links'} on:click={() => (activeTab = 'links')}>Links</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" class:active={activeTab === 'reviews'} on:click={() => (activeTab = 'reviews')}>Reviews</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" class:active={activeTab === 'report'} on:click={() => (activeTab = 'report')}>Report</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" class:active={activeTab === 'stripe'} on:click={() => (activeTab = 'stripe')}>Stripe</a>
-    </li>
-  </ul>
+      <li class="nav-item">
+        <a class="nav-link" class:active={activeTab === 'emails'} on:click={() => (activeTab = 'emails')}>Emails</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" class:active={activeTab === 'links'} on:click={() => (activeTab = 'links')}>Links</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" class:active={activeTab === 'reviews'} on:click={() => (activeTab = 'reviews')}>Reviews</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" class:active={activeTab === 'report'} on:click={() => (activeTab = 'report')}>Report</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" class:active={activeTab === 'stripe'} on:click={() => (activeTab = 'stripe')}>Stripe</a>
+      </li>
+    </ul>
 
-  {#if activeTab === 'about'}
-    <!-- About tab content -->
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Attribute</th>
-          <th scope="col">Value</th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each Object.entries(data) as [key, value] (key)}
+    {#if activeTab === 'about'}
+      <!-- About tab content -->
+      <table class="table">
+        <thead>
           <tr>
-            <td>{key}</td>
-            <td>{value}</td>
-            {#if key != 'business_id' && key != 'registered_on'}
+            <th scope="col">Attribute</th>
+            <th scope="col">Value</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each Object.entries(data) as [key, value] (key)}
+            <tr>
+              <td>{key}</td>
+              <td>{value.slice(0, 20)}</td>
+              {#if key != 'business_id' && key != 'registered_on'}
+                <td>
+                  <button class="btn btn-primary" on:click={() => handleEdit(key)}>Edit</button>
+                </td>
+              {:else}
+                <td></td>
+              {/if}
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {/if}
+
+    {#if activeTab === 'emails'}
+      <button class="btn btn-primary" on:click={sendEmails}>Send Emails</button>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Email</th>
+            <th scope="col">Viewed</th>
+            <th scope="col">Sent Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each emails_list as email (email.id)}
+            <tr>
+              <td>{email.email}</td>
+              <td>{email.viewed ? 'Yes' : 'No'}</td>
               <td>
-                <button class="btn btn-primary" on:click={() => handleEdit(key)}>Edit</button>
+                {email.sent_at.toDate().toLocaleDateString()}
               </td>
-            {:else}
-              <td></td>
-            {/if}
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  {/if}
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {/if}
 
-  {#if activeTab === 'emails'}
-    <button class="btn btn-primary" on:click={sendEmails}>Send Emails</button>
-
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Email</th>
-          <th scope="col">Viewed</th>
-          <th scope="col">Sent Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each emails_list as email (email.id)}
+    {#if activeTab === 'links'}
+      <button class="btn btn-primary" on:click={createLink}>Create Link</button>
+      <table class="table">
+        <thead>
           <tr>
-            <td>{email.email}</td>
-            <td>{email.viewed ? 'Yes' : 'No'}</td>
-            <td>
-              {email.sent_at.toDate().toLocaleDateString()}
-            </td>
+            <th scope="col">Name</th>
+            <th scope="col">Clicks</th>
+            <th scope="col">Collected Reviews</th>
+            <th scope="col">Redirected</th>
+            <th scope="col"></th>
           </tr>
-        {/each}
-      </tbody>
-    </table>
-  {/if}
+        </thead>
+        <tbody>
+          {#each links_list as link (link.id)}
+            <tr>
+              <td>{link.name}</td>
+              <td>{link.total_clicks || 0}</td>
+              <td>{link.total_collected_reviews || 0}</td>
+              <td>{link.total_redirected || 0}</td>
+              <td>
+                <button
+                  class="btn btn-primary"
+                  on:click={() => {
+                    //copy the link to the clipboard
+                    window.copyClip(`${window.isDev ? 'http://127.0.0.1:5005' : 'https://review.myreviewer.ca'}/l/${link.id}`);
+                    alert('Link copied to clipboard');
+                  }}>Copy Link</button
+                >
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {/if}
 
-  {#if activeTab === 'links'}
-    <button class="btn btn-primary" on:click={createLink}>Create Link</button>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Clicks</th>
-          <th scope="col">Collected Reviews</th>
-          <th scope="col">Redirected</th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each links_list as link (link.id)}
+    {#if activeTab === 'reviews'}
+      <table class="table">
+        <thead>
           <tr>
-            <td>{link.name}</td>
-            <td>{link.total_clicks || 0}</td>
-            <td>{link.total_collected_reviews || 0}</td>
-            <td>{link.total_redirected || 0}</td>
-            <td>
-              <button
-                class="btn btn-primary"
-                on:click={() => {
-                  //copy the link to the clipboard
-                  window.copyClip(`${window.isDev ? 'http://127.0.0.1:5005' : 'https://review.myreviewer.ca'}/l/${link.id}`);
-                  alert('Link copied to clipboard');
-                }}>Copy Link</button
-              >
-            </td>
+            <th scope="col">Rating</th>
+            <th scope="col">Review Date</th>
+            <th scope="col">View</th>
           </tr>
-        {/each}
-      </tbody>
-    </table>
-  {/if}
+        </thead>
+        <tbody>
+          {#each reviews_list as review (review.id)}
+            <tr>
+              <td>{review.rating}</td>
+              <td>{review.review_date.toDate().toLocaleString()}</td>
+              <td>
+                <button
+                  class="btn btn-primary"
+                  on:click={() => {
+                    window.spa.push(`/b/${params.id}/${review.id}`);
+                  }}>View</button
+                >
+              </td></tr
+            >
+          {/each}
+        </tbody>
+      </table>
+    {/if}
 
-  {#if activeTab === 'reviews'}
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Rating</th>
-          <th scope="col">Review Date</th>
-          <th scope="col">View</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each reviews_list as review (review.id)}
-          <tr>
-            <td>{review.rating}</td>
-            <td>{review.review_date.toDate().toLocaleString()}</td>
-            <td>
-              <button
-                class="btn btn-primary"
-                on:click={() => {
-                  window.spa.push(`/b/${params.id}/${review.id}`);
-                }}>View</button
-              >
-            </td></tr
-          >
-        {/each}
-      </tbody>
-    </table>
-  {/if}
+    {#if activeTab === 'report'}
+      <h2>Report</h2>
+      <div class="form-group">
+        <label for="start">Start Date:</label>
+        <input type="date" id="start" bind:value={startDate} class="form-control" required />
+      </div>
+      <div class="form-group">
+        <label for="end">End Date:</label>
+        <input type="date" id="end" bind:value={endDate} class="form-control" required />
+      </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" bind:value={email} class="form-control" required />
+      </div>
+      <button class="btn btn-primary" on:click={sendReport}>Send</button>
+    {/if}
 
-  {#if activeTab === 'report'}
-    <h2>Report</h2>
-    <div class="form-group">
-      <label for="start">Start Date:</label>
-      <input type="date" id="start" bind:value={startDate} class="form-control" required />
-    </div>
-    <div class="form-group">
-      <label for="end">End Date:</label>
-      <input type="date" id="end" bind:value={endDate} class="form-control" required />
-    </div>
-    <div class="form-group">
-      <label for="email">Email:</label>
-      <input type="email" id="email" bind:value={email} class="form-control" required />
-    </div>
-    <button class="btn btn-primary" on:click={sendReport}>Send</button>
-  {/if}
-
-  {#if activeTab === 'stripe'}
-    <h2>Stripe</h2>
-    <p>Coming soon</p>
+    {#if activeTab === 'stripe'}
+      <h2>Stripe</h2>
+      <p>Coming soon</p>
+    {/if}
   {/if}
 </div>
