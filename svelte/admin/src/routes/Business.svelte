@@ -17,15 +17,16 @@
     var d = business.data();
     data = {
       name: d.name || '',
-      business_id: business.id || '123',
+      logo_url: d.logo_url || '',
+      redirect_url: d.redirect_url || '',
       registered_on: d.registered_on.toDate().toLocaleDateString() || '',
       contact_email: d.contact_email || '',
       contact_phone: d.contact_phone || '',
-      hubspot_company_id: d.hubspot_company_id || '',
-      stripe_customer_id: d.stripe_customer_id || '',
-      stripe_subscription_id: d.stripe_subscription_id || '',
-      logo_url: d.logo_url || '',
-      redirect_url: d.redirect_url || '',
+      contact_name: d.contact_name || '',
+      // hubspot_company_id: d.hubspot_company_id || '',
+      // stripe_customer_id: d.stripe_customer_id || '',
+      // stripe_subscription_id: d.stripe_subscription_id || '',
+      business_id: business.id || '123',
     };
     await getLinks();
     await getEmails();
@@ -143,6 +144,34 @@
     fileInput.click();
   }
 
+  function sendOneEmail() {
+    const email = prompt('Enter email');
+    if (email === null) {
+      return;
+    }
+
+    const name = prompt('Enter name');
+    if (name === null) {
+      return;
+    }
+    const dataToSend = {
+      business_id: params.id,
+      emails: [[email, name]],
+    };
+    fetch('/send_emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dataToSend),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert(data.message);
+        refresh();
+      });
+  }
+
   var today = new Date();
   var thirtyDaysAgo = new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000);
 
@@ -174,7 +203,7 @@
 
 <div class="container">
   {#if isLoading}
-    isLoading...
+    Is Loading...
   {:else}
     <button class="btn btn-secondary" on:click={window.spa.pop}>Back</button>
 
@@ -232,6 +261,7 @@
 
     {#if activeTab === 'emails'}
       <button class="btn btn-primary" on:click={sendEmails}>Send Emails</button>
+      <button class="btn btn-primary" on:click={sendOneEmail}>Send Single Email</button>
 
       <table class="table">
         <thead>

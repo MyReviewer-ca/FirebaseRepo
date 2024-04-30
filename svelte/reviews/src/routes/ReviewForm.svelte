@@ -7,6 +7,7 @@
   var isError = false;
   var stars_count = 0;
   var selectedStars = 0;
+  var review_id = '';
   const urlParams = new URLSearchParams('?' + window.location.href.split('?')[1]);
   if (urlParams.get('stars_count')) {
     stars_count = parseInt(urlParams.get('stars_count'));
@@ -24,14 +25,28 @@
       try {
         const business = await getDoc(doc(window.db, 'businesses', businessId));
         var d = business.data();
+        console.log(d);
         data = {
           name: d.name || '',
           business_id: business.id || '',
           logo_url: d.logo_url || '',
           redirect_url: d.redirect_url || '',
         };
+        if (urlParams.get('auto_redirect')) {
+          if (urlParams.get('auto_redirect') == 'true') {
+            isLoading = true;
+            page = 'to_google';
+            await saveReview();
+            if (data.redirect_url != '') {
+              window.location.href = data.redirect_url;
+            } else {
+              page = 'error';
+              isLoading = false;
+            }
+          }
+        }
 
-        window.document.title = `Review ${data.name}`;
+        window.document.title = `Review ${data.name || ''}`;
 
         //get radio button with same value as stars_count and check it
 
@@ -58,6 +73,7 @@
       if (document.querySelector('input[name="rating"]:checked')) {
         stars_count = parseInt(document.querySelector('input[name="rating"]:checked').value);
         isError = false;
+        saveReview();
         if (stars_count > 3) {
           page = 'to_google';
         } else {
@@ -85,7 +101,15 @@
     }
   }
 
-  async function saveReview() {
+  async function back() {
+    if (page == 'review') {
+      page = 'stars';
+    } else if (page == 'to_google') {
+      page = 'review';
+    }
+  }
+
+  async function saveReview(id = review_id) {
     isLoading = true;
     var dataToSend = {
       business_id: data.business_id,
@@ -93,6 +117,9 @@
       review: '',
       redirected_to_google: page == 'to_google',
     };
+    if (id) {
+      dataToSend.review_id = id;
+    }
     if (document.querySelector('#review')) {
       dataToSend.review = document.querySelector('#review').value || '';
     }
@@ -116,6 +143,9 @@
       .then((response) => response.json())
       .then((data) => {
         isLoading = false;
+        if (data.review_id) {
+          review_id = data.review_id;
+        }
       })
       .catch((error) => {
         isLoading = false;
@@ -169,7 +199,6 @@
               </div>
             </div>
 
-            <!-- Submit button -->
             <button type="button" class="btn btn-primary" on:click={next}>Next</button>
           </form>
         </div>
@@ -193,6 +222,7 @@
             </div>
 
             <!-- Submit button -->
+            <button type="button" class="btn btn-secondary" on:click={back}>Back</button>
             <button type="button" class="btn btn-primary" on:click={next}>Submit</button>
           </form>
         </div>

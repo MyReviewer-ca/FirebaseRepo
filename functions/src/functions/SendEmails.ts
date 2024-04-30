@@ -71,7 +71,7 @@ export = onRequest(async (request: any, response: any) => {
 
       //send the email
       var to = email[0];
-      var name = email[1];
+      var name = email[1].trim();
       var subject = 'Review ' + businessName;
       var text = '';
       var html = emailTemplate

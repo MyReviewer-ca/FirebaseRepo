@@ -43,24 +43,48 @@ export = onRequest(async (request: any, response: any) => {
   } else if (data.received_from == 'email') {
     dataToSave.email_id = data.email_id || '';
   }
+  console.log(data.review_id);
 
-  //create review under business document
-  db.collection('businesses')
-    .doc(data.business_id)
-    .collection('reviews')
-    .add(dataToSave)
-    .then((docRef) => {
-      response.status(200).send({
-        message: 'Review submitted successfully',
-        success: true,
-        review_id: docRef.id,
+  if (data.review_id) {
+    //update review
+    db.collection('businesses')
+      .doc(data.business_id)
+      .collection('reviews')
+      .doc(data.review_id)
+      .update(dataToSave)
+      .then(() => {
+        response.status(200).send({
+          message: 'Review updated successfully',
+          success: true,
+          review_id: data.review_id,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        response.status(500).send({
+          message: 'Error updating review',
+          success: false,
+        });
       });
-    })
-    .catch((error) => {
-      console.error(error);
-      response.status(500).send({
-        message: 'Error submitting review',
-        success: false,
+  } else {
+    //create review under business document
+    db.collection('businesses')
+      .doc(data.business_id)
+      .collection('reviews')
+      .add(dataToSave)
+      .then((docRef) => {
+        response.status(200).send({
+          message: 'Review submitted successfully',
+          success: true,
+          review_id: docRef.id,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        response.status(500).send({
+          message: 'Error submitting review',
+          success: false,
+        });
       });
-    });
+  }
 });

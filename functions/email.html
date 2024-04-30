@@ -4,51 +4,80 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Product Review Form</title>
+    <style>
+      .sl {
+        text-decoration: none;
+        color: #fbbc04 !important;
+        display: flex;
+        border-color: #707070;
+      }
+      .sl:hover {
+        border-color: #fbbc04;
+        color: #fb9404;
+      }
+      .fr {
+        height: 4px;
+        width: 4px;
+        border-radius: 50%;
+        border: 2px solid;
+        border-color: inherit;
+        padding: 3px;
+        margin-top: 13px;
+        margin-right: 5px;
+      }
+
+      .st {
+        font-size: 27px;
+        color: inherit;
+        margin: 0px;
+      }
+    </style>
   </head>
   <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px">
-    <p>
-      <b>Dear {recipient_name},</b><br /><br />
-      We hope this message finds you well.<br /><br />
-      We're reaching out to you because you recently interacted with {business_name}, either by purchasing a product or service, or engaging with their business in some capacity.
-      At MyReviewer.ca, we are committed to ensuring that our clients provide exceptional experiences to their customers, and your feedback plays a crucial role in this process.<br /><br />
-      <b>Why are you receiving this email?</b><br /><br />
-      You are receiving this email because you are a valued customer of {business_name}. Your opinion matters to us, and we genuinely want to hear about your experience with their
-      business.<br /><br />
-      <b>How can you help?</b><br /><br />
-      Please take a moment to rate your experience with ZWebsites using the 5-star system provided below. Your feedback is greatly appreciated and will help us enhance our
-      services.<br /><br />
-    </p>
-    <form
-      action="/submit-review"
-      method="get"
-      style="max-width: 800px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1)">
-      <fieldset style="border: none; margin-bottom: 20px">
-        <legend>Select a rating below</legend>
-        <input type="radio" id="rating-5" name="rating" value="5" />
-        <label for="rating-5" style="font-size: 20px; color: #fbbc04; cursor: pointer">
-          <a href="{url}/#/r/{business_id}?stars_count=5&email_id={email_id}" target="_blank" style="text-decoration: none; color: #fbbc04">★★★★★</a> </label
-        ><br />
-        <input type="radio" id="rating-4" name="rating" value="4" />
-        <label for="rating-4" style="font-size: 20px; color: #fbbc04; cursor: pointer">
-          <a href="{url}/#/r/{business_id}?stars_count=4&email_id={email_id}" target="_blank" style="text-decoration: none; color: #fbbc04">★★★★</a> </label
-        ><br />
-        <input type="radio" id="rating-3" name="rating" value="3" />
-        <label for="rating-3" style="font-size: 20px; color: #fbbc04; cursor: pointer">
-          <a href="{url}/#/r/{business_id}?stars_count=3&email_id={email_id}" target="_blank" style="text-decoration: none; color: #fbbc04">★★★</a> </label
-        ><br />
-        <input type="radio" id="rating-2" name="rating" value="2" />
-        <label for="rating-2" style="font-size: 20px; color: #fbbc04; cursor: pointer">
-          <a href="{url}/#/r/{business_id}?stars_count=2&email_id={email_id}" target="_blank" style="text-decoration: none; color: #fbbc04">★★</a> </label
-        ><br />
-        <input type="radio" id="rating-1" name="rating" value="1" />
-        <label for="rating-1" style="font-size: 20px; color: #fbbc04; cursor: pointer">
-          <a href="{url}/#/r/{business_id}?stars_count=1&email_id={email_id}" target="_blank" style="text-decoration: none; color: #fbbc04">★</a>
-        </label>
-      </fieldset>
-    </form>
-    <p>Thank you in advance for your time and valuable feedback. If you have any questions or need assistance, please don't hesitate to contact us.<br /><br /></p>
-    <p>Warm regards,<br />The MyReviewer.ca Team</p>
-    <img src="https://review.myreviewer.ca/img/logo.png" alt="MyReviewer Logo" style="width: 200px" />
-    <img src="{url}/tracking_pixel?email_id={email_id}" alt="" style="width: 0px" />
+    <div style="max-width: 800px; margin: 20px auto">
+      <p>
+        <b>Dear {recipient_name},</b><br /><br />
+        We hope this message finds you well.<br /><br />
+        We're reaching out to you because you recently interacted with {business_name}, either by purchasing a product or service, or engaging with their business in some capacity.
+        At MyReviewer.ca, we are committed to ensuring that our clients provide exceptional experiences to their customers, and your feedback plays a crucial role in this
+        process.<br /><br />
+        <b>Why are you receiving this email?</b><br /><br />
+        You are receiving this email because you are a valued customer of {business_name}. Your opinion matters to us, and we genuinely want to hear about your experience with
+        their business.<br /><br />
+        <b>How can you help?</b><br /><br />
+        Please take a moment to rate your experience with {business_name} using the 5-star system provided below. Your feedback is greatly appreciated and will help us enhance our
+        services.<br /><br />
+      </p>
+    </div>
+
+    <fieldset style="max-width: 800px; margin: 20px auto; border: none; background: #fff; padding: 20px; border-radius: 8px">
+      <legend>Select a rating below</legend>
+      <a href="{url}/#/r/{business_id}?stars_count=5&email_id={email_id}&auto_redirect=true" class="sl" target="_blank">
+        <div class="fr"></div>
+        <p class="st">★★★★★</p>
+      </a>
+      <a href="{url}/#/r/{business_id}?stars_count=4&email_id={email_id}&auto_redirect=true" class="sl" target="_blank">
+        <div class="fr"></div>
+        <p class="st">★★★★</p>
+      </a>
+      <a href="{url}/#/r/{business_id}?stars_count=3&email_id={email_id}" class="sl" target="_blank">
+        <div class="fr"></div>
+        <p class="st">★★★</p>
+      </a>
+      <a href="{url}/#/r/{business_id}?stars_count=2&email_id={email_id}" class="sl" target="_blank">
+        <div class="fr"></div>
+        <p class="st">★★</p>
+      </a>
+      <a href="{url}/#/r/{business_id}?stars_count=1&email_id={email_id}" class="sl" target="_blank">
+        <div class="fr"></div>
+        <p class="st">★</p>
+      </a>
+    </fieldset>
+    <div style="max-width: 800px; margin: 20px auto">
+      <p>Thank you in advance for your time and valuable feedback. If you have any questions or need assistance, please don't hesitate to contact us.<br /><br /></p>
+      <p>Warm regards,<br />The MyReviewer.ca Team</p>
+      <img src="https://review.myreviewer.ca/img/logo.png" alt="MyReviewer Logo" style="width: 200px" />
+      <img src="{url}/tracking_pixel?email_id={email_id}" alt="" style="width: 0px" />
+    </div>
   </body>
 </html>
