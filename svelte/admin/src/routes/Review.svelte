@@ -46,6 +46,8 @@
     <h1>Review</h1>
     <p>Rating: <br /><b>{data.rating}</b></p>
     <p>Feedback: <br /><b>{data.review ? data.review : 'No feedback given'}</b></p>
+    <p>Feedback Category: <br /><b>{data.review_category ? data.review_category : 'N/A'}</b></p>
+
     <p>Redirected to google: <br /><b>{data.redirected_to_google ? 'Yes' : 'No'}</b></p>
     <p>Review date: <br /><b>{data.review_date.toDate().toLocaleString()}</b></p>
 

@@ -115,6 +115,7 @@
       business_id: data.business_id,
       rating: stars_count,
       review: '',
+      review_category: '',
       redirected_to_google: page == 'to_google',
     };
     if (id) {
@@ -122,6 +123,7 @@
     }
     if (document.querySelector('#review')) {
       dataToSend.review = document.querySelector('#review').value || '';
+      dataToSend.review_category = document.querySelector('#review_category').value || '';
     }
     if (urlParams.get('email_id')) {
       dataToSend.email_id = urlParams.get('email_id');
@@ -205,7 +207,7 @@
       {:else if page == 'review'}
         <div class="card-body">
           <h2>Review for {data.name}</h2>
-          <p>Sorry that your experience was not optimal, please tell us how we can improve.</p>
+          <p>We understand that your experience was not to your standard, please tell us how we can improve.</p>
           <form>
             <p class="stars">
               {#each Array(stars_count) as _, i}
@@ -214,6 +216,16 @@
             </p>
             <!-- Review input -->
             <div class="mb-3">
+              <select id="review_category" class="form-select" aria-label="Category (optional)">
+                <option selected>Category (optional)</option>
+                <option value="Poor customer service">Poor customer service</option>
+                <option value="Product or service quality">Product or service quality</option>
+                <option value="Delivery issues">Delivery issues</option>
+                <option value="Return or refund problems">Return or refund problems</option>
+                <option value="Lack of empathy and care">Lack of empathy and care</option>
+                <option value="Other">Other</option>
+              </select>
+              <br />
               <label for="review" class="form-label">Feedback</label>
               <textarea class="form-control {isError ? 'is-invalid' : ''}" id="review" rows="3"></textarea>
               {#if isError}

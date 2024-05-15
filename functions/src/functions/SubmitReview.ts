@@ -20,6 +20,7 @@ export = onRequest(async (request: any, response: any) => {
     business_id: data.business_id || '',
     rating: data.rating || '',
     review: data.review || '',
+    review_category: data.review_category || '',
     redirected_to_google: data.redirected_to_google || false,
     received_from: data.received_from || '',
     review_date: Firestore.FieldValue.serverTimestamp(),

@@ -36,7 +36,7 @@ export = onRequest(async (request: any, response: any) => {
   var about: any[][] = [];
   var emails: any[][] = [['id', 'email', 'name', 'sent date', 'viewed', 'opened at']];
   var links: any[][] = [['id', 'name', 'type', 'created on', 'total clicks', 'total collected reviews', 'total redirected']];
-  var reviews: any[][] = [['id', 'rating', 'feedback', 'review date', 'redirected to google', 'received_from', 'email_id', 'link_id']];
+  var reviews: any[][] = [['id', 'rating', 'feedback', 'feedback_category', 'review date', 'redirected to google', 'received_from', 'email_id', 'link_id']];
 
   //get business data
 
@@ -109,7 +109,8 @@ export = onRequest(async (request: any, response: any) => {
     reviews.push([
       doc.id,
       reviewData.rating || 0,
-      reviewData.feedback || '',
+      reviewData.review || '',
+      reviewData.review_category || '',
       reviewData.review_date.toDate().toLocaleString(),
       reviewData.redirected_to_google || false,
       reviewData.received_from || '',
